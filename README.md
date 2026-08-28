@@ -8,7 +8,7 @@ Welcome to the official documentation for the **Flyingbee PDF Conversion SDK for
 
 Want to try before deploying? Use the **Flyingbee PDF Converter Online** to convert PDFs to MS Office formats directly in your browser — no installation required.
 
-[🚀 Launch Web Demo](https://www.flyingbee.com/pdf-sdk/documentation/guides/server-windows/)
+[🚀 Launch Web Demo](https://www.flyingbee.com/pdf-converter/)
 
 ---
 
