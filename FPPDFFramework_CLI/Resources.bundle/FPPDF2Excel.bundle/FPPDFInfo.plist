@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>FPPDFInfo_Creator</key>
+	<string>PDF to Excel</string>
+	<key>FPPDFInfo_Company</key>
+	<string>Flyingbee Software</string>
+	<key>FPPDFInfo_Version</key>
+	<string>1.0</string>
+	<key>FPPDFInfo_Website</key>
+	<string>http://www.flyingbee.com</string>
+	<key>FPPDFInfo_Copyright</key>
+	<string>Copyright @2020 Flyingbee Software</string>
+</dict>
+</plist>

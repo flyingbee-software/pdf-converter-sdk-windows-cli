@@ -1,0 +1,74 @@
+textEncoding	UTF-8
+textPageBreaks	no
+continuousView  no
+initialZoom 100
+mapUnknownCharNames yes
+drawAnnotations yes
+
+#----- Type 1 fonts, Symbol & ZapfDingbats  ----- 
+fontFile Symbol                 /t1fonts/s050000l.pfb
+fontFile ZapfDingbats           /t1fonts/d050000l.pfb
+
+#----- Chinese Simplified ----- 
+cidToUnicode	Adobe-GB1			/chinese-simplified/Adobe-GB1.cidToUnicode
+unicodeMap	ISO-2022-CN			/chinese-simplified/ISO-2022-CN.unicodeMap
+unicodeMap	EUC-CN				/chinese-simplified/EUC-CN.unicodeMap
+unicodeMap	GBK				/chinese-simplified/GBK.unicodeMap
+cMapDir		Adobe-GB1			/chinese-simplified/CMap
+toUnicodeDir					/chinese-simplified/CMap
+
+#----- Chinese Traditional ----- 
+cidToUnicode	Adobe-CNS1			/chinese-traditional/Adobe-CNS1.cidToUnicode
+unicodeMap	Big5				/chinese-traditional/Big5.unicodeMap
+unicodeMap	Big5ascii			/chinese-traditional/Big5ascii.unicodeMap
+cMapDir		Adobe-CNS1			/chinese-traditional/CMap
+toUnicodeDir					/chinese-traditional/CMap
+
+#----- Japanese ----- 
+cidToUnicode	Adobe-Japan1 			/japanese/Adobe-Japan1.cidToUnicode
+unicodeMap	ISO-2022-JP			/japanese/ISO-2022-JP.unicodeMap
+unicodeMap	EUC-JP				/japanese/EUC-JP.unicodeMap
+unicodeMap	Shift-JIS			/japanese/Shift-JIS.unicodeMap
+cMapDir		Adobe-Japan1			/japanese/CMap
+toUnicodeDir					/japanese/CMap
+
+#----- Korean ----- 
+cidToUnicode	Adobe-Korea1			/korean/Adobe-Korea1.cidToUnicode
+unicodeMap	ISO-2022-KR			/korean/ISO-2022-KR.unicodeMap
+cMapDir		Adobe-Korea1			/korean/CMap
+toUnicodeDir					/korean/CMap
+
+#----- Arabic ----- 
+unicodeMap	ISO-8859-6			/arabic/ISO-8859-6.unicodeMap
+
+#----- Cyrillic ----- 
+#nameToUnicode					/cyrillic/Bulgarian.nameToUnicode
+#unicodeMap	KOI8-R				/cyrillic/KOI8-R.unicodeMap
+#----- end cyrillic support package
+
+#----- Greek ----- 
+#nameToUnicode					/greek/Greek.nameToUnicode
+#unicodeMap	ISO-8859-7			/greek/ISO-8859-7.unicodeMap
+#----- end Greek support package
+
+#----- Hebrew ----- 
+unicodeMap	ISO-8859-8			/hebrew/ISO-8859-8.unicodeMap
+unicodeMap	Windows-1255			/hebrew/Windows-1255.unicodeMap
+#----- end Hebrew support package
+
+#----- Latin2 ----- 
+unicodeMap	Latin2				/latin2/Latin2.unicodeMap
+#----- end Latin2 support package
+
+#----- Thai ----- 
+#nameToUnicode					/thai/Thai.nameToUnicode
+#unicodeMap	TIS-620				/thai/TIS-620.unicodeMap
+#----- end Thai support package
+
+#----- Turkish ----- 
+unicodeMap	ISO-8859-9			/turkish/ISO-8859-9.unicodeMap
+#----- end Turkish support package
+
+#----- Identity ----- 
+cMapDir		Adobe-Identity			/identity/CMap
+toUnicodeDir					/identity/CMap
