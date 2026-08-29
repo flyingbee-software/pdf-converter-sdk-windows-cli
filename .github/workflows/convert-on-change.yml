@@ -1,0 +1,53 @@
+# Run pdf-converter.ps1 automatically when source/executable/library files change.
+#
+# Triggers on `push` whenever a matched path (exe, dll, source files, converter
+# resources, or the converter script itself) is modified, then runs the bundled
+# pdf-converter.ps1 as a smoke test and uploads the produced .docx files as artifacts.
+#
+# NOTE: the bundled SDK is an EXPIRED trial (max 10 pages). The converter returns a
+# non-zero exit code even on success, so the job judges pass/fail by the output files.
+
+name: Convert on change
+
+on:
+  push:
+    paths:
+      - '**/*.exe'
+      - '**/*.dll'
+      - '**/*.ps1'
+      - '**/*.cs'
+      - '**/*.cpp'
+      - '**/*.h'
+      - '**/*.hpp'
+      - 'FPPDFFramework_CLI/Resources.bundle/**'
+  workflow_dispatch:
+
+jobs:
+  convert-on-change:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Run pdf-converter.ps1
+        shell: pwsh
+        run: |
+          Set-Location FPPDFFramework_CLI
+          ./pdf-converter.ps1
+          # The converter returns a non-zero exit code under an expired/trial license
+          # even when it succeeds, so decide by the produced output instead.
+          $out  = Join-Path $PWD "converted"
+          $docs = @(Get-ChildItem -Path $out -Filter *.docx -ErrorAction SilentlyContinue)
+          if ($docs.Count -eq 0) {
+            Write-Error "pdf-converter.ps1 produced no .docx output (conversion may have failed)."
+            exit 1
+          }
+          Write-Host "Produced $($docs.Count) docx file(s): $($docs.Name -join ', ')"
+          exit 0
+
+      - name: Upload converted files
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: converted-docx
+          path: FPPDFFramework_CLI/converted/
