@@ -8,7 +8,7 @@ Welcome to the official documentation for the **Flyingbee PDF Conversion SDK for
 
 Want to try before deploying? Use the **Flyingbee PDF Converter Online** to convert PDFs to MS Office formats directly in your browser — no installation required.
 
-[🚀 Launch Web Demo](https://www.flyingbee.com/pdf-converter/)
+[🚀 Launch Web Demo](https://www.flyingbee.com/pdf-converter/?utm_source=github_readme_conversion_sdk_windows_cli&utm_medium=referral&utm_campaign=github_readme_conversion_sdk_windows_cli)
 
 ---
 
@@ -160,7 +160,7 @@ Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 Should you have any questions, please contact Flyingbee Support:
 
 - **Email:** [support@flyingbee.com](mailto:support@flyingbee.com)
-- **Contact Page:** [https://www.flyingbee.com/contact-us/](https://www.flyingbee.com/contact-us/)
+- **Contact Page:** [https://www.flyingbee.com/contact-us/](https://www.flyingbee.com/contact-us/?utm_source=github_readme_conversion_sdk_windows_cli&utm_medium=referral&utm_campaign=github_readme_conversion_sdk_windows_cli)
 
 ---
 
