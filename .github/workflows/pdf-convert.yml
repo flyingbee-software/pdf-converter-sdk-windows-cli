@@ -68,6 +68,9 @@ jobs:
             exit 1
           }
           Write-Host "Output produced: $out"
+          # Force a success exit code: PowerShell keeps $LASTEXITCODE from the converter
+          # (which is 1 under an expired/trial license), so reset it explicitly here.
+          exit 0
 
       - name: Upload result
         uses: actions/upload-artifact@v4
