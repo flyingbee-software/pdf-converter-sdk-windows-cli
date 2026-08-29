@@ -12,6 +12,12 @@
 name: PDF Convert (Flyingbee SDK)
 
 on:
+  # Auto-run on every push that changes the SDK binaries/sources under FPPDFFramework_CLI
+  push:
+    branches: [main]
+    paths:
+      - 'FPPDFFramework_CLI/**'
+  # Also allow manual runs with custom inputs
   workflow_dispatch:
     inputs:
       input_pdf:
@@ -51,9 +57,10 @@ jobs:
         shell: pwsh
         run: |
           $tool  = "FPPDFFramework_CLI/FPPDFConverter.exe"
-          $in    = "${{ github.event.inputs.input_pdf }}"
-          $fmt   = "${{ github.event.inputs.format }}"
-          $pages = "${{ github.event.inputs.pages }}"
+          # Fallback defaults so push-triggered runs (no workflow_dispatch inputs) still work
+          $in    = "${{ github.event.inputs.input_pdf || 'FPPDFFramework_CLI/Test.pdf' }}"
+          $fmt   = "${{ github.event.inputs.format || 'docx' }}"
+          $pages = "${{ github.event.inputs.pages || 'all' }}"
           $out   = "output/$([System.IO.Path]::GetFileNameWithoutExtension($in)).$fmt"
           New-Item -ItemType Directory -Force -Path output | Out-Null
           & $tool -a PDF2Files -i "$in" -o "$out" -f $fmt -p $pages
@@ -75,5 +82,5 @@ jobs:
       - name: Upload result
         uses: actions/upload-artifact@v6
         with:
-          name: converted-${{ github.event.inputs.format }}
+          name: converted-${{ github.event.inputs.format || 'docx' }}
           path: output/
