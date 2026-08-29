@@ -34,7 +34,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # (Optional) If SDK is distributed as a Release asset instead of committed:
       # - name: Download SDK
@@ -73,7 +73,7 @@ jobs:
           exit 0
 
       - name: Upload result
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: converted-${{ github.event.inputs.format }}
           path: output/
