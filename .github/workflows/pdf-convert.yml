@@ -1,0 +1,65 @@
+# PDF conversion via Flyingbee PDF Converter SDK (Windows CLI)
+#
+# NOTE for production use:
+#   1. This package uses an EXPIRED trial license (max 10 pages). Buy a valid
+#      license from Flyingbee and inject the license file via secrets before CI use.
+#   2. The SDK binaries (FPPDFConverter.exe, FPPDFFramework.dll, Resources.bundle/)
+#      are large. Do NOT commit them to git. Instead download them from a private
+#      GitHub Release (or use actions/cache). The steps below assume the SDK already
+#      exists at ./FPPDFFramework_CLI in the repo for demo purposes.
+#   3. Runs on windows-latest because FPPDFConverter.exe is a Windows binary.
+
+name: PDF Convert (Flyingbee SDK)
+
+on:
+  workflow_dispatch:
+    inputs:
+      input_pdf:
+        description: "Path to the PDF to convert (relative to repo root)"
+        required: true
+        default: "FPPDFFramework_CLI/Test.pdf"
+      format:
+        description: "Output format"
+        required: true
+        default: "docx"
+        type: choice
+        options: [docx, xlsx, pptx, txt]
+      pages:
+        description: "Page range, e.g. 'all' or '1-3'"
+        required: false
+        default: "all"
+
+jobs:
+  convert:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # (Optional) If SDK is distributed as a Release asset instead of committed:
+      # - name: Download SDK
+      #   run: |
+      #     $url = "${{ secrets.SDK_RELEASE_URL }}"
+      #     Invoke-WebRequest -Uri $url -OutFile sdk.zip
+      #     Expand-Archive sdk.zip -DestinationPath .
+
+      - name: Inspect SDK
+        shell: pwsh
+        run: Get-ChildItem "FPPDFFramework_CLI"
+
+      - name: Convert PDF
+        shell: pwsh
+        run: |
+          $tool  = "FPPDFFramework_CLI/FPPDFConverter.exe"
+          $in    = "${{ github.event.inputs.input_pdf }}"
+          $fmt   = "${{ github.event.inputs.format }}"
+          $pages = "${{ github.event.inputs.pages }}"
+          $out   = "output/$([System.IO.Path]::GetFileNameWithoutExtension($in)).$fmt"
+          New-Item -ItemType Directory -Force -Path output | Out-Null
+          & $tool -a PDF2Files -i "$in" -o "$out" -f $fmt -p $pages
+
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: converted-${{ github.event.inputs.format }}
+          path: output/
