@@ -54,10 +54,13 @@ $pages = "${{ github.event.inputs.pages }}"
 $out   = "output/$([System.IO.Path]::GetFileNameWithoutExtension($in)).$fmt"
 New-Item -ItemType Directory -Force -Path output | Out-Null
 & $tool -a PDF2Files -i "$in" -o "$out" -f $fmt -p $pages
+if (-not (Test-Path $out)) { Write-Error "Conversion failed"; exit 1 }
 ```
 
 The invocation is identical to running the tool locally, so the behavior you tested on your
-machine matches what runs in CI.
+machine matches what runs in CI. Note that the converter returns a **non-zero exit code** when
+the license is expired/trial, even when it still produces the output file; the workflow
+therefore checks for the output file rather than the exit code to decide success.
 
 ## Notes & limits
 

@@ -57,6 +57,17 @@ jobs:
           $out   = "output/$([System.IO.Path]::GetFileNameWithoutExtension($in)).$fmt"
           New-Item -ItemType Directory -Force -Path output | Out-Null
           & $tool -a PDF2Files -i "$in" -o "$out" -f $fmt -p $pages
+          $code = $LASTEXITCODE
+          if ($code -ne 0) {
+            Write-Warning "FPPDFConverter exited with code $code (common with an expired/trial license; the output file may still be produced for small PDFs)."
+          }
+          # The converter returns a non-zero exit code when the license is expired/trial,
+          # even if it actually produced the file. Decide success by the output file instead.
+          if (-not (Test-Path $out)) {
+            Write-Error "Conversion failed: expected output '$out' was not created."
+            exit 1
+          }
+          Write-Host "Output produced: $out"
 
       - name: Upload result
         uses: actions/upload-artifact@v4
