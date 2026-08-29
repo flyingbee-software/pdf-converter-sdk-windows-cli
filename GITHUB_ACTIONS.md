@@ -55,6 +55,7 @@ $out   = "output/$([System.IO.Path]::GetFileNameWithoutExtension($in)).$fmt"
 New-Item -ItemType Directory -Force -Path output | Out-Null
 & $tool -a PDF2Files -i "$in" -o "$out" -f $fmt -p $pages
 if (-not (Test-Path $out)) { Write-Error "Conversion failed"; exit 1 }
+exit 0
 ```
 
 The invocation is identical to running the tool locally, so the behavior you tested on your
