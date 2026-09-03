@@ -1,19 +1,25 @@
 ﻿# -*- coding: utf-8-with-bom -*-
 # ====================================================
-#   PowerShell PDF Conversion Script
+#   PowerShell PDF OCR Conversion Script
 #   Author: Flyingbee
-#   Features: Custom output folder, multi-threading, logging,
-#             "%PDF" header validation (skips invalid / placeholder files)
+#   Features: Same as pdf-converter.ps1, PLUS OCR enabled by default.
+#             Each PDF is converted with: -r 1 -g <OCR_LANG>
+#             (-r 1 starts OCR; scanned/image-based PDFs become searchable text).
+#   Requires: The matching Tesseract language data (*.traineddata) shipped in
+#             the "Resources.bundle" folder next to the EXE.
 # ====================================================
 
 # ============ CONFIGURATION ============
 $PDF_DIR        = "."                             # Input directory ("." = current)
 $TOOL_PATH      = "FPPDFConverter.exe"            # Path to converter
 $OUTPUT_FORMAT  = "docx"                          # Output format: docx, pptx, xlsx, html, csv, txt, png, jpeg, etc.
-$OUTPUT_DIR     = "converted"                     # Output subdirectory (default: "converted")
-$LOG_FILE       = "conversion.log"                # Log file name
+$OUTPUT_DIR     = "converted_ocr"                 # Output subdirectory (kept separate from the non-OCR script)
+$LOG_FILE       = "conversion-ocr.log"            # Log file name (kept separate from the non-OCR script)
 $SUCCESS_MARKER = "Successfully converted!"       # Success keyword
 $NUM_THREADS    = 4                               # Thread count per conversion
+$OCR_ENABLE     = 1                               # 1 = start OCR (-r 1), 0 = do not use OCR
+$OCR_LANG       = "eng"                           # OCR language for Tesseract: e.g. eng, chi_sim, jpn,
+                                                  #                       osd, deu, fra, spa, rus, ...
 # =======================================
 
 # ============ Helper: validate a real PDF ============
@@ -44,10 +50,11 @@ try {
 
 # Initialize log
 $START_TIME_TOTAL = Get-Date
-"📄 PDF to $OUTPUT_FORMAT Conversion Log" | Out-File -FilePath $LOG_FILE -Encoding UTF8
+"📄 PDF to $OUTPUT_FORMAT Conversion Log (OCR: $OCR_LANG)" | Out-File -FilePath $LOG_FILE -Encoding UTF8
 "📅 Started at: $START_TIME_TOTAL" | Out-File -Append -FilePath $LOG_FILE -Encoding UTF8
 "========================================" | Out-File -Append -FilePath $LOG_FILE -Encoding UTF8
 "⚙️  Threads: $NUM_THREADS" | Out-File -Append -FilePath $LOG_FILE -Encoding UTF8
+"🔤 OCR language: $OCR_LANG" | Out-File -Append -FilePath $LOG_FILE -Encoding UTF8
 "📤 Output folder: .\$OUTPUT_DIR/" | Out-File -Append -FilePath $LOG_FILE -Encoding UTF8
 "" | Out-File -Append -FilePath $LOG_FILE -Encoding UTF8
 
@@ -93,7 +100,7 @@ if ($PDF_FILES.Count -eq 0) {
 }
 
 $TOTAL = $PDF_FILES.Count
-Write-Host "📦 Found $TOTAL valid PDF file(s). Starting conversion..."
+Write-Host "📦 Found $TOTAL valid PDF file(s). Starting conversion (OCR: $OCR_LANG)..."
 "📦 Found $TOTAL valid PDF file(s)." | Out-File -Append -FilePath $LOG_FILE -Encoding UTF8
 if ($SKIPPED_COUNT -gt 0) {
     Write-Host "⚠️ Skipped $SKIPPED_COUNT invalid file(s)."
@@ -118,7 +125,7 @@ foreach ($i in 0..($TOTAL - 1)) {
     Write-Host $MESSAGE
     $MESSAGE | Out-File -Append -FilePath $LOG_FILE -Encoding UTF8
 
-    $MESSAGE = "🔄 Converting ($INDEX/$TOTAL)..."
+    $MESSAGE = "🔄 OCR Converting ($INDEX/$TOTAL)..."
     Write-Host $MESSAGE
     $MESSAGE | Out-File -Append -FilePath $LOG_FILE -Encoding UTF8
 
@@ -133,8 +140,10 @@ foreach ($i in 0..($TOTAL - 1)) {
     $OUTPUT_FILE_NAME = [System.IO.Path]::ChangeExtension($PDF_NAME, $OUTPUT_FORMAT)
     $OUTPUT_FILE_PATH = Join-Path -Path $OutputPath -ChildPath $OUTPUT_FILE_NAME
 
-    # Build command arguments
-    $ARGUMENTS = "-a PDF2Files -i `"$($PDF_FILE.FullName)`" -o `"$OUTPUT_FILE_PATH`" -f $OUTPUT_FORMAT -p all -t $NUM_THREADS"
+    # Build command arguments. "-r 1" starts OCR and "-g" selects the OCR language.
+    $OCR_ARG = ""
+    if ($OCR_ENABLE -eq 1) { $OCR_ARG = "-r 1 -g $OCR_LANG" }
+    $ARGUMENTS = "-a PDF2Files -i `"$($PDF_FILE.FullName)`" -o `"$OUTPUT_FILE_PATH`" -f $OUTPUT_FORMAT -p all -t $NUM_THREADS $OCR_ARG"
 
     # Print the exact command line to the console and the log before running it
     $RUN_LINE = "▶️ Running: `"$TOOL_PATH`" $ARGUMENTS"

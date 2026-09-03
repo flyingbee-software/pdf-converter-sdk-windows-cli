@@ -31,7 +31,7 @@ Before deployment, ensure your Windows server meets the following requirements:
 
 - **Operating System**: Windows 7 / Server 2008 R2 or later (64-bit recommended)
 - **Runtime**: Microsoft Visual C++ Redistributable (included in the package)
-- **Files**: EXE, DLL, and resource files must reside in the same directory
+- **Files**: EXE, DLL, and resource files (including the `Resources.bundle` folder used for OCR) must reside in the same directory
 - **Permissions**: The EXE file must have executable permissions
 
 ---
@@ -56,36 +56,70 @@ cd "C:/Users/Administrator/Desktop/Exe-Folder/"
 
 ### 3. Display Help Information
 
+Show the general help screen:
+
 ```
 ./FPPDFConverter -h
 ```
 
-Sample output:
+Show command-specific help (recommended — lists every option that command accepts):
 
 ```
-=== Welcome to use Flyingbee PDF Converter! ===
-App exe folder: C:UsersAdministratorDesktopApps PDF Console
-FPPDFConverter v1.6.1.0
-FPPDFConverter - Convert PDF to Word/Excel/PPT, etc.
-Usage: FPPDFConverter -a CMD_Name [input]filepath.pdf [options]docx [output]filepath.docx
-Where options are:
-  -a [app]     The apps: "PDF2Files", "Images2PDF", "Text2Word"
-  -h [help]    print this help message
-  -c [open]    open converted file [todo]
-=== Thank you for using our product! ===
+./FPPDFConverter -a PDF2Files -h
+./FPPDFConverter -a Images2PDF -h
+./FPPDFConverter -a Text2Word -h
 ```
+
+Sample general help output:
+
+```
+FPPDFConverter - High-performance PDF to Word/Excel/PPT/Image Converter
+
+USAGE:
+  FPPDFConverter -a <command> [options]
+
+COMMANDS:
+  PDF2Files       Convert PDF documents to Word, Excel, PPT, Images, etc.
+  Images2PDF      Merge multiple images into a single PDF document.
+  Text2Word       Convert plain text files to formatted Word documents.
+
+GENERAL OPTIONS:
+  -h              Show this help message and exit.
+  -c              Open the converted file automatically upon completion.
+
+EXAMPLES:
+  FPPDFConverter -a PDF2Files -i input.pdf -o output.docx
+  FPPDFConverter -a Images2PDF -i ./images -o merged.pdf -s A4
+
+Run 'FPPDFConverter -a <command> -h' for command-specific options.
+```
+
+All supported options are summarized in the [Command-Line Reference](#command-line-reference) section below.
 
 ---
 
 ## Supported Conversion Apps
 
-### PDF2Files — Convert PDF to Office Documents, TXT, Images
+The CLI ships with three conversion tasks, selected with the `-a` switch:
 
-Convert all PDF files in a folder to Word, Excel, PowerPoint, or other formats:
+- **`PDF2Files`** — Convert PDF documents to Word, Excel, PPT, HTML, TXT, CSV, or images.
+- **`Images2PDF`** — Merge multiple images into a single PDF document.
+- **`Text2Word`** — Convert plain text files to formatted Word documents.
+
+### PDF2Files — Convert PDF to Word, Excel, PPT, Images, and More
+
+Convert a PDF document into Word, Excel, PowerPoint, HTML, TXT, CSV, or raster image formats:
 
 ```
-./FPPDFConverter -a PDF2Files -i "Test.pdf" -f docx -p all
+./FPPDFConverter -a PDF2Files -i "Test.pdf" -o "Test.docx" -f docx
+./FPPDFConverter -a PDF2Files -i "Test.pdf" -o "Page" -f png -p "1-3,5"
+./FPPDFConverter -a PDF2Files -i "encrypted.pdf" -o "decrypted.docx" -w "your-password"
+./FPPDFConverter -a PDF2Files -i "scanned.pdf" -o "ocr.docx" -f docx -r -g eng
 ```
+
+**Supported output formats:** `docx` (default), `pptx`, `xlsx`, `html`, `csv`, `txt`, `jpeg`, `jpg`, `png`, `bmp`, `tif`, `tiff`, `gif`.
+
+See [PDF2Files Options](#pdf2files-options) for the complete option reference.
 
 ### Images2PDF — Convert Images to PDF
 
@@ -98,8 +132,11 @@ Merge multiple images into a single PDF document.
 ```
 ./FPPDFConverter -a Images2PDF -h
 ./FPPDFConverter -a Images2PDF -i "C:/Users/Administrator/Desktop/images/" -o "C:/Users/Administrator/Desktop/Images2PDF.pdf"
-./FPPDFConverter -a Images2PDF -i "C:/Users/Administrator/Desktop/images/" -o "C:/Users/Administrator/Desktop/Images2PDF.pdf" -p auto
+./FPPDFConverter -a Images2PDF -i "C:/Users/Administrator/Desktop/images/" -o "C:/Users/Administrator/Desktop/Images2PDF.pdf" -s auto
+./FPPDFConverter -a Images2PDF -i "C:/Users/Administrator/Desktop/images/" -o "C:/Users/Administrator/Desktop/Images2PDF.pdf" -s A4 -m 0.5 -t "My Album" -A "Author"
 ```
+
+> **Tip:** Control the paper size with `-s` (e.g., `-s A4` or `-s auto`) and the page margins with `-m`. Full option details are in [Images2PDF Options](#images2pdf-options).
 
 ### Text2Word — Convert Text File to Word
 
@@ -109,7 +146,161 @@ Convert plain text files to Word documents with formatting:
 ./FPPDFConverter -a Text2Word -h
 ./FPPDFConverter -a Text2Word -i "C:/Users/Administrator/Desktop/Txt Tests/text-cn-gb.txt" -o "C:/Users/Administrator/Desktop/Text2Word.docx"
 ./FPPDFConverter -a Text2Word -i "C:/Users/Administrator/Desktop/Txt Tests/text-en-ansi.txt" -o "C:/Users/Administrator/Desktop/Text2Word.docx"
+./FPPDFConverter -a Text2Word -i "C:/Users/Administrator/Desktop/Txt Tests/text-cn-gb.txt" -o "C:/Users/Administrator/Desktop/Text2Word.docx" -s A4 -b "SimSun" -d 12
 ```
+
+See [Text2Word Options](#text2word-options) for the complete option reference.
+
+---
+
+## Command-Line Reference
+
+Every task is invoked through the single `FPPDFConverter` executable. Select the task with the `-a` switch and pass its options as shown below:
+
+```
+FPPDFConverter -a <command> [options]
+```
+
+The option tables mirror the help text printed by `FPPDFConverter -a <command> -h`.
+
+> **Note:** Option switches are interpreted in the context of each command. For example, `-w` is the PDF *password* for `PDF2Files`, but the custom paper *width* for `Images2PDF` and `Text2Word`. Always run `FPPDFConverter -a <command> -h` if you are unsure.
+
+### Common Options (all commands)
+
+| Option | Description |
+| :--- | :--- |
+| `-h` | Show the help message for the current command and exit. |
+| `-c` | Open the converted file automatically upon completion. |
+
+### PDF2Files Options
+
+```
+FPPDFConverter -a PDF2Files -i <input.pdf> -o <output> [options]
+```
+
+**Required Options**
+
+| Option | Description |
+| :--- | :--- |
+| `-i <path>` | Input PDF file path. |
+| `-o <path>` | Output file or directory path. |
+
+**Conversion Settings**
+
+| Option | Description |
+| :--- | :--- |
+| `-f <format>` | Target format: `docx` (default), `pptx`, `xlsx`, `html`, `csv`, `txt`, `jpeg`, `jpg`, `png`, `bmp`, `tif`, `tiff`, `gif`. |
+| `-p <ranges>` | Page ranges to convert (e.g., `1-3,5,8-10`). |
+| `-t <threads>` | Number of processing threads (1–10, default: 1). |
+| `-x` | (XLSX only) Merge multiple sheets into a single sheet. |
+| `-w <password>` | Password for opening encrypted PDF files. |
+
+**HTML-Specific Options**
+
+| Option | Description |
+| :--- | :--- |
+| `-l <mode>` | Layout mode: `0` = Exact page layout (default), `1` = Text flow. |
+| `-e <mode>` | Paragraph style: `0` = Line break (default), `1` = Indent. |
+| `-b <mode>` | Navigation bar: `0` = Disabled, `1` = Enabled (default). |
+| `-m <level>` | Resource merge: `0` = None (default), `1` = CSS/JS, `2` = CSS/JS/Small Images, `3` = CSS/JS/All Images. |
+| `-z` | Package the HTML output and its resources into a ZIP file. |
+
+**Image-Specific Options**
+
+| Option | Description |
+| :--- | :--- |
+| `-d <dpi>` | Image resolution (72–600, default: 144). |
+| `-n <mode>` | Anti-aliasing: `0` = None, `1` = Font smoothing (default). |
+
+**OCR Options**
+
+| Option | Description |
+| :--- | :--- |
+| `-r` | Enable OCR (Optical Character Recognition). |
+| `-g <lang>` | OCR language for Tesseract (e.g., `eng`, `chi_sim`, `jpn`). |
+
+> OCR relies on the Tesseract language packs shipped inside the `Resources.bundle` folder — keep that folder alongside the EXE (see [System Requirements](#system-requirements)).
+
+### Images2PDF Options
+
+```
+FPPDFConverter -a Images2PDF -i <folder> -o <output.pdf> [options]
+```
+
+**Required Options**
+
+| Option | Description |
+| :--- | :--- |
+| `-i <folder>` | Source folder containing images. |
+| `-o <path>` | Output PDF file path. |
+
+**Page & Layout Options**
+
+| Option | Description |
+| :--- | :--- |
+| `-s <size>` | Paper size: `A0`–`A10`, `Letter`, `Legal`, `Tabloid`, `4x6`, `5x7`, or `auto` (default: none). |
+| `-n <orient>` | Orientation: `portrait`, `landscape`, `auto` (default: `auto`). |
+| `-w <inches>` | Custom paper width in inches (used when the size is custom). |
+| `-l <inches>` | Custom paper height in inches (used when the size is custom). |
+| `-m <margin>` | Page margins in inches (append `mm` for millimeters). |
+| `-z <scale>` | Scale mode: `fit` (default), `fw`, `fh`, `reduce`, `rw`, `rh`, `none`. |
+| `-r <crop>` | Crop/Expand: `none` (default), `height`, `width`, `both`. |
+
+**Metadata Options**
+
+| Option | Description |
+| :--- | :--- |
+| `-t <title>` | Document title. |
+| `-A <author>` | Document author. |
+| `-k <keywords>` | Document keywords. |
+| `-S <subject>` | Document subject. |
+| `-C <creator>` | Document creator. |
+
+### Text2Word Options
+
+```
+FPPDFConverter -a Text2Word -i <input.txt> -o <output.docx> [options]
+```
+
+**Required Options**
+
+| Option | Description |
+| :--- | :--- |
+| `-i <path>` | Input plain text file path. |
+| `-o <path>` | Output Word document path. |
+
+**Page & Layout Options**
+
+| Option | Description |
+| :--- | :--- |
+| `-s <size>` | Paper size: `A0`–`A10`, `Letter`, `Legal`, `Tabloid`, `4x6`, `5x7`, or `auto` (default: none). |
+| `-n <orient>` | Orientation: `portrait`, `landscape`, `auto` (default: `auto`). |
+| `-w <inches>` | Custom paper width in inches (used when the size is custom). |
+| `-l <inches>` | Custom paper height in inches (used when the size is custom). |
+| `-m <margin>` | Page margins in inches (append `mm` for millimeters). |
+| `-e <columns>` | Number of columns (1–10, default: 1). |
+
+**Font Options**
+
+| Option | Description |
+| :--- | :--- |
+| `-b <font>` | Font name: `Arial` (default), `Calibri`, `Courier`, `Times New Roman`, `Helvetica`, `Verdana`, `Consolas`, `SimSun`, `SimHei`, `FangSong`, `KaiTi`, `Microsoft YaHei`. |
+| `-d <size>` | Font size in points (8–72, default: 12). |
+
+### Command Examples at a Glance
+
+| Task | Command |
+| :--- | :--- |
+| PDF → Word | `FPPDFConverter -a PDF2Files -i "input.pdf" -o "output.docx" -f docx` |
+| PDF → PowerPoint | `FPPDFConverter -a PDF2Files -i "input.pdf" -o "output.pptx" -f pptx` |
+| PDF → Excel | `FPPDFConverter -a PDF2Files -i "input.pdf" -o "output.xlsx" -f xlsx` |
+| PDF → HTML (packed as ZIP) | `FPPDFConverter -a PDF2Files -i "input.pdf" -o "output" -f html -z` |
+| Convert a page range to PNG | `FPPDFConverter -a PDF2Files -i "input.pdf" -o "Page" -f png -p "1-3,5"` |
+| OCR a scanned PDF | `FPPDFConverter -a PDF2Files -i "scanned.pdf" -o "ocr.docx" -f docx -r -g eng` |
+| Open encrypted PDF | `FPPDFConverter -a PDF2Files -i "private.pdf" -o "out.docx" -w "your-password"` |
+| Images → PDF (auto page size) | `FPPDFConverter -a Images2PDF -i "./images" -o "merged.pdf" -s auto` |
+| Images → PDF with title/author | `FPPDFConverter -a Images2PDF -i "./images" -o "merged.pdf" -s A4 -t "My Album" -A "Author"` |
+| TXT → Word (Chinese font) | `FPPDFConverter -a Text2Word -i "notes.txt" -o "notes.docx" -b "SimSun" -d 12` |
 
 ---
 
@@ -148,10 +339,14 @@ Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 ## Platform Command Differences
 
+PowerShell and Command Prompt differ slightly in how you launch the executable and quote arguments:
+
 | Platform | Command |
 | :--- | :--- |
-| **PowerShell** | `./FPPDFConverter -i xxxx.pdf` |
-| **Command Prompt (CMD)** | `FPPDFConverter -i xxxx.pdf` |
+| **PowerShell** | `./FPPDFConverter -a PDF2Files -i "Test.pdf" -o "Test.docx"` |
+| **Command Prompt (CMD)** | `FPPDFConverter.exe -a PDF2Files -i "Test.pdf" -o "Test.docx"` |
+
+> In PowerShell, `./` prefixes the executable to run it from the current directory; in CMD you can call `FPPDFConverter.exe` directly when it is in the current directory or on `PATH`.
 
 ---
 
